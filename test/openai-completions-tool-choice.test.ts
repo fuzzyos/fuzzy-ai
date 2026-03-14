@@ -40,7 +40,7 @@ describe("openai-completions tool_choice", () => {
 		const tools: Tool[] = [
 			{
 				name: "ping",
-				description: "Fuzzyng tool",
+				description: "Ping tool",
 				parameters: Type.Object({
 					ok: Type.Boolean(),
 				}),
@@ -85,7 +85,7 @@ describe("openai-completions tool_choice", () => {
 		const tools: Tool[] = [
 			{
 				name: "ping",
-				description: "Fuzzyng tool",
+				description: "Ping tool",
 				parameters: Type.Object({
 					ok: Type.Boolean(),
 				}),

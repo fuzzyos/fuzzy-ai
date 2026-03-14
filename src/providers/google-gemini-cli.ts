@@ -937,7 +937,7 @@ export function buildRequest(
 		request,
 		...(isAntigravity ? { requestType: "agent" } : {}),
 		userAgent: isAntigravity ? "antigravity" : "fuzzy-code",
-		requestId: `${isAntigravity ? "agent" : "fuzzy"}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+		requestId: `${isAntigravity ? "agent" : "pi"}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
 	};
 }
 
