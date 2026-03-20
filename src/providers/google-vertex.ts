@@ -10,8 +10,8 @@ import type {
 	Api,
 	AssistantMessage,
 	Context,
-	ThinkingLevel as FuzzyThinkingLevel,
 	Model,
+	ThinkingLevel as PiThinkingLevel,
 	SimpleStreamOptions,
 	StreamFunction,
 	StreamOptions,
@@ -101,6 +101,9 @@ export const streamGoogleVertex: StreamFunction<"google-vertex", GoogleVertexOpt
 			const blocks = output.content;
 			const blockIndex = () => blocks.length - 1;
 			for await (const chunk of googleStream) {
+				// Vertex uses the same @google/genai GenerateContentResponse type as Gemini.
+				// responseId is documented there as an output-only identifier for each response.
+				output.responseId ||= chunk.responseId;
 				const candidate = chunk.candidates?.[0];
 				if (candidate?.content?.parts) {
 					for (const part of candidate.content.parts) {
@@ -365,7 +368,15 @@ function createClientWithApiKey(
 }
 
 function resolveApiKey(options?: GoogleVertexOptions): string | undefined {
-	return options?.apiKey || process.env.GOOGLE_CLOUD_API_KEY;
+	const apiKey = options?.apiKey?.trim() || process.env.GOOGLE_CLOUD_API_KEY?.trim();
+	if (!apiKey || isPlaceholderApiKey(apiKey)) {
+		return undefined;
+	}
+	return apiKey;
+}
+
+function isPlaceholderApiKey(apiKey: string): boolean {
+	return /^<[^>]+>$/.test(apiKey);
 }
 
 function resolveProject(options?: GoogleVertexOptions): string {
@@ -443,7 +454,7 @@ function buildParams(
 	return params;
 }
 
-type ClampedThinkingLevel = Exclude<FuzzyThinkingLevel, "xhigh">;
+type ClampedThinkingLevel = Exclude<PiThinkingLevel, "xhigh">;
 
 function isGemini3ProModel(model: Model<"google-generative-ai">): boolean {
 	return /gemini-3(?:\.\d+)?-pro/.test(model.id.toLowerCase());

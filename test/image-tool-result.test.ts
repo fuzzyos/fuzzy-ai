@@ -437,7 +437,7 @@ describe("Tool Results with Images", () => {
 			},
 		);
 
-		/** These two don't work, the model simply won't call the tool, works in pi
+		/** These two don't work, the model simply won't call the tool, works in fuzzy
 		it.skipIf(!antigravityToken)(
 			"claude-sonnet-4-5 - should handle tool result with only image",
 			{ retry: 3, timeout: 30000 },

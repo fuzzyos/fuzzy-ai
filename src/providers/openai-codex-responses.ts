@@ -1,7 +1,7 @@
 import type * as NodeOs from "node:os";
 import type { Tool as OpenAITool, ResponseInput, ResponseStreamEvent } from "openai/resources/responses/responses.js";
 
-// NEVER convert to top-level runtime imports - breaks browser/Vite builds (fuzzy-web-ui)
+// NEVER convert to top-level runtime imports - breaks browser/Vite builds (web-ui)
 let _os: typeof NodeOs | null = null;
 
 type DynamicImport = (specifier: string) => Promise<unknown>;
@@ -885,8 +885,8 @@ function buildBaseCodexHeaders(
 	}
 	headers.set("Authorization", `Bearer ${token}`);
 	headers.set("chatgpt-account-id", accountId);
-	headers.set("originator", "pi");
-	const userAgent = _os ? `pi (${_os.platform()} ${_os.release()}; ${_os.arch()})` : "pi (browser)";
+	headers.set("originator", "fuzzy");
+	const userAgent = _os ? `fuzzy (${_os.platform()} ${_os.release()}; ${_os.arch()})` : "fuzzy (browser)";
 	headers.set("User-Agent", userAgent);
 	return headers;
 }

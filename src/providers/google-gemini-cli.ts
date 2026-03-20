@@ -548,6 +548,9 @@ export const streamGoogleGeminiCli: StreamFunction<"google-gemini-cli", GoogleGe
 							// Unwrap the response
 							const responseData = chunk.response;
 							if (!responseData) continue;
+							// Cloud Code Assist mirrors Gemini's responseId field. Keep the first non-empty one.
+							// A single streamed response should retain the same ID across chunks.
+							output.responseId ||= responseData.responseId;
 
 							const candidate = responseData.candidates?.[0];
 							if (candidate?.content?.parts) {
@@ -937,7 +940,7 @@ export function buildRequest(
 		request,
 		...(isAntigravity ? { requestType: "agent" } : {}),
 		userAgent: isAntigravity ? "antigravity" : "fuzzy-code",
-		requestId: `${isAntigravity ? "agent" : "pi"}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
+		requestId: `${isAntigravity ? "agent" : "fuzzy"}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
 	};
 }
 

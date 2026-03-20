@@ -75,7 +75,7 @@ function buildSSEPayload({
 
 describe("openai-codex streaming", () => {
 	it("streams SSE responses into AssistantMessageEventStream", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "pi-codex-stream-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "fuzzy-codex-stream-"));
 		process.env.FUZZY_CODING_AGENT_DIR = tempDir;
 
 		const payload = Buffer.from(
@@ -136,7 +136,7 @@ describe("openai-codex streaming", () => {
 				expect(headers?.get("Authorization")).toBe(`Bearer ${token}`);
 				expect(headers?.get("chatgpt-account-id")).toBe("acc_test");
 				expect(headers?.get("OpenAI-Beta")).toBe("responses=experimental");
-				expect(headers?.get("originator")).toBe("pi");
+				expect(headers?.get("originator")).toBe("fuzzy");
 				expect(headers?.get("accept")).toBe("text/event-stream");
 				expect(headers?.has("x-api-key")).toBe(false);
 				return new Response(stream, {
@@ -186,7 +186,7 @@ describe("openai-codex streaming", () => {
 	});
 
 	it("completes after response.completed even when the SSE body stays open", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "pi-codex-stream-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "fuzzy-codex-stream-"));
 		process.env.FUZZY_CODING_AGENT_DIR = tempDir;
 		const token = mockToken();
 		const encoder = new TextEncoder();
@@ -245,7 +245,7 @@ describe("openai-codex streaming", () => {
 	});
 
 	it("maps response.incomplete to stopReason length even when the SSE body stays open", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "pi-codex-stream-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "fuzzy-codex-stream-"));
 		process.env.FUZZY_CODING_AGENT_DIR = tempDir;
 		const token = mockToken();
 		const encoder = new TextEncoder();
@@ -304,7 +304,7 @@ describe("openai-codex streaming", () => {
 	});
 
 	it("sets conversation_id/session_id headers and prompt_cache_key when sessionId is provided", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "pi-codex-stream-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "fuzzy-codex-stream-"));
 		process.env.FUZZY_CODING_AGENT_DIR = tempDir;
 
 		const payload = Buffer.from(
@@ -405,7 +405,7 @@ describe("openai-codex streaming", () => {
 	});
 
 	it.each(["gpt-5.3-codex", "gpt-5.4"])("clamps %s minimal reasoning effort to low", async (modelId) => {
-		const tempDir = mkdtempSync(join(tmpdir(), "pi-codex-stream-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "fuzzy-codex-stream-"));
 		process.env.FUZZY_CODING_AGENT_DIR = tempDir;
 
 		const payload = Buffer.from(
@@ -501,7 +501,7 @@ describe("openai-codex streaming", () => {
 	});
 
 	it("does not set conversation_id/session_id headers when sessionId is not provided", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "pi-codex-stream-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "fuzzy-codex-stream-"));
 		process.env.FUZZY_CODING_AGENT_DIR = tempDir;
 
 		const payload = Buffer.from(
