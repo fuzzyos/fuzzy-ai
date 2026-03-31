@@ -127,6 +127,8 @@ export const streamOpenAICompletions: StreamFunction<"openai-completions", OpenA
 			};
 
 			for await (const chunk of openaiStream) {
+				if (!chunk || typeof chunk !== "object") continue;
+
 				// OpenAI documents ChatCompletionChunk.id as the unique chat completion identifier,
 				// and each chunk in a streamed completion carries the same id.
 				output.responseId ||= chunk.id;
@@ -134,7 +136,7 @@ export const streamOpenAICompletions: StreamFunction<"openai-completions", OpenA
 					output.usage = parseChunkUsage(chunk.usage, model);
 				}
 
-				const choice = chunk.choices?.[0];
+				const choice = Array.isArray(chunk.choices) ? chunk.choices[0] : undefined;
 				if (!choice) continue;
 
 				// Fallback: some providers (e.g., Moonshot) return usage
@@ -393,6 +395,9 @@ function buildParams(model: Model<"openai-completions">, context: Context, optio
 
 	if (context.tools) {
 		params.tools = convertTools(context.tools, compat);
+		if (compat.zaiToolStream) {
+			(params as any).tool_stream = true;
+		}
 	} else if (hasToolHistory(context.messages)) {
 		// Anthropic (via LiteLLM/proxy) requires tools param when conversation has tool_calls/tool_results
 		params.tools = [];
@@ -408,12 +413,16 @@ function buildParams(model: Model<"openai-completions">, context: Context, optio
 		(params as any).enable_thinking = !!options?.reasoningEffort;
 	} else if (compat.thinkingFormat === "qwen-chat-template" && model.reasoning) {
 		(params as any).chat_template_kwargs = { enable_thinking: !!options?.reasoningEffort };
-	} else if (compat.thinkingFormat === "openrouter" && options?.reasoningEffort && model.reasoning) {
+	} else if (compat.thinkingFormat === "openrouter" && model.reasoning) {
 		// OpenRouter normalizes reasoning across providers via a nested reasoning object.
 		const openRouterParams = params as typeof params & { reasoning?: { effort?: string } };
-		openRouterParams.reasoning = {
-			effort: mapReasoningEffort(options.reasoningEffort, compat.reasoningEffortMap),
-		};
+		if (options?.reasoningEffort) {
+			openRouterParams.reasoning = {
+				effort: mapReasoningEffort(options.reasoningEffort, compat.reasoningEffortMap),
+			};
+		} else {
+			openRouterParams.reasoning = { effort: "none" };
+		}
 	} else if (options?.reasoningEffort && model.reasoning && compat.supportsReasoningEffort) {
 		// OpenAI-style reasoning_effort
 		(params as any).reasoning_effort = mapReasoningEffort(options.reasoningEffort, compat.reasoningEffortMap);
@@ -829,6 +838,7 @@ function detectCompat(model: Model<"openai-completions">): Required<OpenAIComple
 				: "openai",
 		openRouterRouting: {},
 		vercelGatewayRouting: {},
+		zaiToolStream: false,
 		supportsStrictMode: true,
 	};
 }
@@ -855,6 +865,7 @@ function getCompat(model: Model<"openai-completions">): Required<OpenAICompletio
 		thinkingFormat: model.compat.thinkingFormat ?? detected.thinkingFormat,
 		openRouterRouting: model.compat.openRouterRouting ?? {},
 		vercelGatewayRouting: model.compat.vercelGatewayRouting ?? detected.vercelGatewayRouting,
+		zaiToolStream: model.compat.zaiToolStream ?? detected.zaiToolStream,
 		supportsStrictMode: model.compat.supportsStrictMode ?? detected.supportsStrictMode,
 	};
 }

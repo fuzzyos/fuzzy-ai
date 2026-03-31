@@ -889,6 +889,8 @@ export function buildRequest(
 		} else if (options.thinking.budgetTokens !== undefined) {
 			generationConfig.thinkingConfig.thinkingBudget = options.thinking.budgetTokens;
 		}
+	} else if (model.reasoning && options.thinking && !options.thinking.enabled) {
+		generationConfig.thinkingConfig = getDisabledThinkingConfig(model.id);
 	}
 
 	const request: CloudCodeAssistRequest["request"] = {
@@ -939,12 +941,27 @@ export function buildRequest(
 		model: model.id,
 		request,
 		...(isAntigravity ? { requestType: "agent" } : {}),
-		userAgent: isAntigravity ? "antigravity" : "fuzzy-code",
+		userAgent: isAntigravity ? "antigravity" : "fuzzy-fuzzy-code",
 		requestId: `${isAntigravity ? "agent" : "fuzzy"}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
 	};
 }
 
 type ClampedThinkingLevel = Exclude<ThinkingLevel, "xhigh">;
+
+function getDisabledThinkingConfig(modelId: string): ThinkingConfig {
+	// Google docs: Gemini 3.1 Pro cannot disable thinking, and Gemini 3 Flash / Flash-Lite
+	// do not support full thinking-off either. For Gemini 3 models, use the lowest supported
+	// thinkingLevel without includeThoughts so hidden thinking remains invisible to fuzzy.
+	if (isGemini3ProModel(modelId)) {
+		return { thinkingLevel: "LOW" as any };
+	}
+	if (isGemini3FlashModel(modelId)) {
+		return { thinkingLevel: "MINIMAL" as any };
+	}
+
+	// Gemini 2.x supports disabling via thinkingBudget = 0.
+	return { thinkingBudget: 0 };
+}
 
 function getGeminiCliThinkingLevel(effort: ClampedThinkingLevel, modelId: string): GoogleThinkingLevel {
 	if (isGemini3ProModel(modelId)) {
