@@ -10598,23 +10598,6 @@ export const MODELS = {
 			contextWindow: 2000000,
 			maxTokens: 4096,
 		} satisfies Model<"openai-completions">,
-		"x-ai/grok-4.20-beta": {
-			id: "x-ai/grok-4.20-beta",
-			name: "xAI: Grok 4.20 Beta",
-			api: "openai-completions",
-			provider: "openrouter",
-			baseUrl: "https://openrouter.ai/api/v1",
-			reasoning: true,
-			input: ["text", "image"],
-			cost: {
-				input: 2,
-				output: 6,
-				cacheRead: 0.19999999999999998,
-				cacheWrite: 0,
-			},
-			contextWindow: 2000000,
-			maxTokens: 4096,
-		} satisfies Model<"openai-completions">,
 		"x-ai/grok-code-fast-1": {
 			id: "x-ai/grok-code-fast-1",
 			name: "xAI: Grok Code Fast 1",
