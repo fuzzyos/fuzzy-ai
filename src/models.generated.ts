@@ -10222,7 +10222,7 @@ export const MODELS = {
 				cacheWrite: 0,
 			},
 			contextWindow: 256000,
-			maxTokens: 65536,
+			maxTokens: 32768,
 		} satisfies Model<"openai-completions">,
 		"qwen/qwen3.5-flash-02-23": {
 			id: "qwen/qwen3.5-flash-02-23",
