@@ -10292,8 +10292,8 @@ export const MODELS = {
 			contextWindow: 131072,
 			maxTokens: 131072,
 		} satisfies Model<"openai-completions">,
-		"reka/reka-edge": {
-			id: "reka/reka-edge",
+		"rekaai/reka-edge": {
+			id: "rekaai/reka-edge",
 			name: "Reka Edge",
 			api: "openai-completions",
 			provider: "openrouter",
