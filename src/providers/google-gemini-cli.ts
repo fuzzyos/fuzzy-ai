@@ -77,7 +77,7 @@ const GEMINI_CLI_HEADERS = {
 };
 
 // Headers for Antigravity (sandbox endpoint) - requires specific User-Agent
-const DEFAULT_ANTIGRAVITY_VERSION = "1.18.4";
+const DEFAULT_ANTIGRAVITY_VERSION = "1.21.9";
 
 function getAntigravityHeaders() {
 	const version = process.env.FUZZY_AI_ANTIGRAVITY_VERSION || DEFAULT_ANTIGRAVITY_VERSION;
@@ -941,7 +941,7 @@ export function buildRequest(
 		model: model.id,
 		request,
 		...(isAntigravity ? { requestType: "agent" } : {}),
-		userAgent: isAntigravity ? "antigravity" : "fuzzy-fuzzy-code",
+		userAgent: isAntigravity ? "antigravity" : "fuzzy-code",
 		requestId: `${isAntigravity ? "agent" : "fuzzy"}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
 	};
 }
